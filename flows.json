@@ -1,0 +1,87 @@
+[
+    {
+      "id": "inject_button",
+      "type": "inject",
+      "z": "flow1",
+      "name": "Fetch Photo",
+      "props": [
+        {
+          "p": "payload"
+        }
+      ],
+      "repeat": "",
+      "crontab": "",
+      "once": false,
+      "onceDelay": 0.1,
+      "topic": "",
+      "payload": "",
+      "payloadType": "str",
+      "x": 100,
+      "y": 100,
+      "wires": [
+        [
+          "http_request"
+        ]
+      ]
+    },
+    {
+      "id": "http_request",
+      "type": "http request",
+      "z": "flow1",
+      "name": "Get Photo from Pexels",
+      "method": "GET",
+      "ret": "obj",
+      "paytoqs": "ignore",
+      "url": "https://api.pexels.com/v1/curated?per_page=1",
+      "tls": "",
+      "persist": false,
+      "proxy": "",
+      "authType": "",
+      "senderr": false,
+      "headers": {
+        "Authorization": "YOUR_PEXELS_API_KEY"
+      },
+      "x": 280,
+      "y": 100,
+      "wires": [
+        [
+          "format_message"
+        ]
+      ]
+    },
+    {
+      "id": "format_message",
+      "type": "function",
+      "z": "flow1",
+      "name": "Format Message",
+      "func": "let photo = msg.payload.photos[0];\n\nlet message = `📸 Photo Alert\\n`;\nmessage += `Photographer: ${photo.photographer}\\n`;\nmessage += `Link: ${photo.url}`;\n\nmsg.payload = {\n  text: message\n};\n\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 460,
+      "y": 100,
+      "wires": [
+        [
+          "slack_node"
+        ]
+      ]
+    },
+    {
+      "id": "slack_node",
+      "type": "slack",
+      "z": "flow1",
+      "name": "Send to Slack",
+      "webhook": "YOUR_SLACK_WEBHOOK",
+      "channel": "",
+      "username": "",
+      "icon_emoji": "",
+      "icon_url": "",
+      "x": 640,
+      "y": 100,
+      "wires": [
+        []
+      ]
+    }
+  ]
